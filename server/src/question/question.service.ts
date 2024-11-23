@@ -2,6 +2,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { QuestionRepository } from './question.repository';
 import { CreateQuestionDto } from './dto/create-question.dto';
 import { Question } from './entities/question.entity';
+import { FindQuestionsDto } from './dto/find-questions.dto';
 
 @Injectable()
 export class QuestionService {
@@ -13,8 +14,15 @@ export class QuestionService {
     return this.questionRepostiory.save(question);
   }
 
-  async find() {
-    return this.questionRepostiory.find();
+  async findQuestions({ language }: FindQuestionsDto) {
+    const [questionsWithAnwsers] =
+      await this.questionRepostiory.findQuestions(language);
+
+    for (const question of questionsWithAnwsers) {
+      delete question.rightAnswer;
+    }
+
+    return questionsWithAnwsers;
   }
 
   async delete(questionId: string): Promise<void> {
