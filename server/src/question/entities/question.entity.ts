@@ -6,7 +6,7 @@ export class Question extends DefaultEntity<Question> {
   @Column({ type: 'boolean', default: true })
   isMultipleChoice: boolean;
 
-  @Column({ type: 'string', nullable: false })
+  @Column({ type: 'char', nullable: false })
   language: string;
 
   @Column({ type: 'text', nullable: false })
