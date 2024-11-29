@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { GroqClientFactory } from '../factory/create-groq-client';
 import { ConfigService } from '@nestjs/config';
 import Groq from 'groq-sdk';
+import { AppQuestionDto } from '../dto/app-questio.dto';
 
 @Injectable()
 export class GroqApiGateway {
@@ -13,12 +14,12 @@ export class GroqApiGateway {
     );
   }
 
-  async getGroqData() {
+  async getGroqData({ context }: AppQuestionDto): Promise<string> {
     const chatCompletion = await this.groqClient.chat.completions.create({
       messages: [
         {
           role: 'user',
-          content: 'Oi',
+          content: context,
         },
       ],
       model: 'llama3-8b-8192',
@@ -29,9 +30,12 @@ export class GroqApiGateway {
       stop: null,
     });
 
+    let answer: string = ' ';
+
     for await (const chunk of chatCompletion) {
-      console.log(chunk.choices[0]?.delta?.content || '');
-      process.stdout.write(chunk.choices[0]?.delta?.content || '');
+      answer += chunk.choices[0]?.delta?.content || '';
     }
+
+    return answer;
   }
 }
